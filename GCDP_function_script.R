@@ -1,9 +1,9 @@
 getwd()
 library(data.table)
 
-GCDP <- function(file_path, start_datetime, end_datetime, output_path) {
+GCDP <- function(input_path, start_datetime, end_datetime, output_path) {
   # Read the TXT file using data.table's fread function
-  data <- fread(cmd = paste0('"', file_path, '"'), header = TRUE)
+  data <- fread(input_path, header = TRUE)
   
   # Filter out non-numeric rows in Messstelle column
   data <- data[grepl("^\\d+$", Messstelle)]
