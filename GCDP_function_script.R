@@ -4,8 +4,8 @@ GCDP <- function(file_path, start_datetime, end_datetime) {
   # Read the TXT file using data.table's fread function
   data <- fread(file_path, header = TRUE)
   
-  # Remove unwanted headers
-  data <- data[Messstelle != "Messstelle"]
+  # Filter out non-numeric rows in Messstelle column
+  data <- data[grepl("^\\d+$", Messstelle)]
   
   # Create DateTime column
   data[, DateTime := as.POSIXct(paste(Datum, Zeit), format = "%Y-%m-%d %H:%M:%S")][, c("Datum", "Zeit") := NULL]
@@ -32,6 +32,7 @@ GCDP <- function(file_path, start_datetime, end_datetime) {
   
   cat("Processed data has been saved as", output_file, "\n")
 }
+
 
 #Example
 GCDP(file_path = "D:/Data Analysis/Master Thesis data/Ansyco FTIR Data/Ansyco_Data/Harsh vertical pipe setup.TXT",
