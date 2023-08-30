@@ -18,22 +18,23 @@ FDP <- function(raw_path, clean_path) {
   # Filter out non-numeric rows in Messstelle column
   data <- data[grepl("^\\d+$", Messstelle)]
   
-  # Create DateTime column
-  data[, DateTime := as.POSIXct(paste(Datum, Zeit), format = "%Y-%m-%d %H:%M:%S")][, c("Datum", "Zeit") := NULL]
+  # Create Date.time column
+  data[, Date.time := as.POSIXct(paste(Datum, Zeit), format = "%Y-%m-%d %H:%M:%S")][, c("Datum", "Zeit") := NULL]
   
   # Select final columns
-  data <- data[, .(DateTime, Messstelle, H2O, CO2, NH3, CH4)]
-  
-  # Mutate columns
-  data[, c("Messstelle", "CO2", "NH3", "CH4", "H2O") := .(
-    as.numeric(Messstelle),
-    as.numeric(CO2),
-    as.numeric(NH3),
-    as.numeric(CH4),
-    as.numeric(H2O))]
+  data <- data[, .(Date.time, Messstelle, H2O, CO2, NH3, CH4)]
   
   # Rename the columns
-  colnames(data) <- c("DateTime", "Sampling.point", "CO2.F", "NH3.F", "CH4.F","H2O.F")
+  colnames(data) <- c("Date.time.F", "Sampling.point.F", "CO2.F", "NH3.F", "CH4.F","H2O.F")
+  
+  # Mutate columns
+  data[, c("Date.time.F", "Sampling.point.F", "CO2.F", "NH3.F", "CH4.F","H2O.F") := .(
+    as.POSIXct(Date.time.F, format = "%d/%m/%Y %H:%M:%S"),
+    as.numeric(Sampling.point.F),
+    as.numeric(CO2.F),
+    as.numeric(NH3.F),
+    as.numeric(CH4.F),
+    as.numeric(H2O.F))]
   
   # Create the output file name
   output_file <- file.path(clean_path, paste0(format(Sys.Date(), "%Y%m%d"), "_FDP", ".CSV"))
@@ -64,23 +65,33 @@ ODP <- function(raw_path, clean_path) {
     
     data <- read.table(file, header = TRUE, sep = delimiter)  # Adjust the sep parameter based on the delimiter
     
-    # Select specific columns by index and rename column 1 to "DateTime"
+    # Select specific columns by index and rename column 1 to "Date.time"
     selected_data <- data[, c(1, 2, 3, 4, 6, 10, 13)]
-    colnames(selected_data)[1] <- "DateTime"
+    colnames(selected_data)[1] <- "Date.time"
     
-    # Remove decimal points from seconds in the "DateTime" column
-    selected_data$DateTime <- sub("\\.\\d+", "", selected_data$DateTime)
+    # Remove decimal points from seconds in the "Date.time" column
+    selected_data$Date.time <- sub("\\.\\d+", "", selected_data$Date.time)
     
-    # Convert the "DateTime" column to a POSIXct object
-    selected_data$DateTime <- as.POSIXct(selected_data$DateTime, format = "%Y-%m-%d %H:%M:%S")
+    # Convert the "Date.time" column to a POSIXct object
+    selected_data$Date.time <- as.POSIXct(selected_data$Date.time, format = "%Y-%m-%d %H:%M:%S")
     
     # Adjust the time by adding 2 hours (120 minutes)
-    selected_data$DateTime <- selected_data$DateTime + minutes(120)
+    selected_data$Date.time <- selected_data$Date.time + minutes(120)
     
     OTICE_data <- rbind(OTICE_data, selected_data)}
   
    # Rename the columns
-  colnames(OTICE_data) <- c("DateTime", "Sampling.point", "temperature", "H2O.O", "NH3.O", "CO2.O", "CH4.O")
+  colnames(OTICE_data) <- c("Date.time.O", "Sampling.point.O", "temperature", "H2O.O", "NH3.O", "CO2.O", "CH4.O")
+  
+  # Mutate columns
+  OTICE_data[, c("Date.time.O", "Sampling.point.O", "temperature", "CO2.F", "NH3.F", "CH4.F","H2O.F") := .(
+    as.POSIXct(Date.time.O, format = "%d/%m/%Y %H:%M:%S"),
+    as.numeric(Sampling.point.O),
+    as.numeric(temperature),
+    as.numeric(CO2.F),
+    as.numeric(NH3.F),
+    as.numeric(CH4.F),
+    as.numeric(H2O.F))]
   
   # Create the output file name
   output_file <- file.path(clean_path, paste0(format(Sys.Date(), "%Y%m%d"), "_ODP", ".CSV"))
