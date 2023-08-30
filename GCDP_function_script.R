@@ -22,7 +22,7 @@ FDP <- function(raw_path, clean_path) {
   data[, Date.time := as.POSIXct(paste(Datum, Zeit), format = "%Y-%m-%d %H:%M:%S")][, c("Datum", "Zeit") := NULL]
   
   # Select final columns
-  data <- data[, .(Date.time, Messstelle, H2O, CO2, NH3, CH4)]
+  data <- data[, .(Date.time, Messstelle, CO2, NH3, CH4, H2O)]
   
   # Rename the columns
   colnames(data) <- c("Date.time.F", "Sampling.point.F", "CO2.F", "NH3.F", "CH4.F","H2O.F")
@@ -46,8 +46,8 @@ FDP <- function(raw_path, clean_path) {
 }
 
 # Call the function with the inputs (Example)
-#FDP(raw_path="D:/Data Analysis/Gas_data/Raw_data/FTIR_raw/2023-07-08_FTIR.TXT", clean_path="D:/Data Analysis/Gas_data/Clean_data/FTIR_clean")
-#FTIR_data <- read.csv("D:/Data Analysis/Gas_data/Clean_data/FTIR_clean/20230830_FDP.CSV")
+FDP(raw_path="D:/Data Analysis/Gas_data/Raw_data/FTIR_raw/2023-07-08_FTIR.TXT", clean_path="D:/Data Analysis/Gas_data/Clean_data/FTIR_clean")
+FTIR_data <- read.csv("D:/Data Analysis/Gas_data/Clean_data/FTIR_clean/20230830_FDP.CSV")
 
 
 
