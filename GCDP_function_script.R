@@ -25,11 +25,11 @@ FDP <- function(raw_path, clean_path) {
   data <- data[, .(Date.time, Messstelle, CO2, NH3, CH4, H2O)]
   
   # Rename the columns
-  colnames(data) <- c("Date.time.F", "Sampling.point.F", "CO2.F", "NH3.F", "CH4.F","H2O.F")
+  colnames(data) <- c("Date.time", "Sampling.point.F", "CO2.F", "NH3.F", "CH4.F","H2O.F")
   
   # Mutate columns
-  data[, c("Date.time.F", "Sampling.point.F", "CO2.F", "NH3.F", "CH4.F","H2O.F") := .(
-    as.POSIXct(Date.time.F, format = "%d/%m/%Y %H:%M:%S"),
+  data[, c("Date.time", "Sampling.point.F", "CO2.F", "NH3.F", "CH4.F","H2O.F") := .(
+    as.POSIXct(Date.time, format = "%d/%m/%Y %H:%M:%S"),
     as.factor(Sampling.point.F),
     as.numeric(CO2.F),
     as.numeric(NH3.F),
@@ -67,32 +67,32 @@ ODP <- function(raw_path, clean_path) {
     
     # Select specific columns by index and rename column 1 to "Date.time"
     selected_data <- data[, c(1, 2, 3, 4, 6, 10, 13)]
-    colnames(selected_data)[1] <- "Date.time.O"
+    colnames(selected_data)[1] <- "Date.time"
     
     # Remove decimal points from seconds in the "Date.time" column
-    selected_data$Date.time.O <- sub("\\.\\d+", "", selected_data$Date.time.O)
+    selected_data$Date.time <- sub("\\.\\d+", "", selected_data$Date.time)
     
     # Convert the "Date.time" column to a POSIXct object
-    selected_data$Date.time.O <- as.POSIXct(selected_data$Date.time.O, format = "%Y-%m-%d %H:%M:%S")
+    selected_data$Date.time <- as.POSIXct(selected_data$Date.time, format = "%Y-%m-%d %H:%M:%S")
     
     # Adjust the time by adding 2 hours (120 minutes)
-    selected_data$Date.time.O <- selected_data$Date.time.O + minutes(120)
+    selected_data$Date.time <- selected_data$Date.time + minutes(120)
     
     OTICE_data <- rbind(OTICE_data, selected_data)
   }
   
   # Rename the columns
-  colnames(OTICE_data) <- c("Date.time.O", "Sampling.point.O", "temperature", "H2O.O", "NH3.O", "CO2.O", "CH4.O")
+  colnames(OTICE_data) <- c("Date.time", "Sampling.point", "temperature", "H2O", "NH3", "CO2", "CH4")
   
   # Mutate columns
-  OTICE_data[, c("Date.time.O", "Sampling.point.O", "temperature", "H2O.O", "NH3.O", "CO2.O", "CH4.O") := .(
-    as.POSIXct(Date.time.O, format = "%d/%m/%Y %H:%M:%S"),
-    as.factor(Sampling.point.O),
+  OTICE_data[, c("Date.time", "Sampling.point", "temperature", "H2O", "NH3", "CO2", "CH4") := .(
+    as.POSIXct(Date.time, format = "%d/%m/%Y %H:%M:%S"),
+    as.factor(Sampling.point),
     as.numeric(temperature),
-    as.numeric(H2O.O),
-    as.numeric(NH3.O),
-    as.numeric(CO2.O),
-    as.numeric(CH4.O))]
+    as.numeric(H2O),
+    as.numeric(NH3),
+    as.numeric(CO2),
+    as.numeric(CH4))]
   
   # Create the output file name
   output_file <- file.path(clean_path, paste0(format(Sys.Date(), "%Y%m%d"), "_ODP", ".CSV"))
@@ -110,7 +110,7 @@ ODP <- function(raw_path, clean_path) {
 }
 
 # Call the function to combine and save the data (Example)
-#ODP(raw_path="D:/Data Analysis/Gas_data/Raw_data/OTICE_raw", clean_path="D:/Data Analysis/Gas_data/Clean_data/OTICE_clean")
-#OTICE_data <- read.csv("D:/Data Analysis/Gas_data/Clean_data/OTICE_clean/20230830_ODP.CSV")
+ODP(raw_path="D:/Data Analysis/Gas_data/Raw_data/OTICE_raw", clean_path="D:/Data Analysis/Gas_data/Clean_data/OTICE_clean")
+OTICE_data <- read.csv("D:/Data Analysis/Gas_data/Clean_data/OTICE_clean/20230830_ODP.CSV")
 
 
