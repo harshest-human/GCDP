@@ -32,6 +32,9 @@ FDP <- function(raw_path, clean_path) {
     as.numeric(CH4),
     as.numeric(H2O))]
   
+  # Rename the columns
+  colnames(data) <- c("DateTime", "Sampling.point", "CO2.F", "NH3.F", "CH4.F","H2O.F")
+  
   # Create the output file name
   output_file <- file.path(clean_path, paste0(format(Sys.Date(), "%Y%m%d"), "_FDP", ".CSV"))
   
@@ -42,7 +45,8 @@ FDP <- function(raw_path, clean_path) {
 }
 
 # Call the function with the inputs (Example)
-#FDP(raw_path="D:/Data Analysis/Gas_data/Raw_data/FTIR_raw/20230203_FTIR.TXT", clean_path="D:/Data Analysis/Gas_data/Clean_data/FTIR_clean")
+#FDP(raw_path="D:/Data Analysis/Gas_data/Raw_data/FTIR_raw/2023-07-08_FTIR.TXT", clean_path="D:/Data Analysis/Gas_data/Clean_data/FTIR_clean")
+#FTIR_data <- read.csv("D:/Data Analysis/Gas_data/Clean_data/FTIR_clean/20230830_FDP.CSV")
 
 
 
@@ -73,8 +77,10 @@ ODP <- function(raw_path, clean_path) {
     # Adjust the time by adding 2 hours (120 minutes)
     selected_data$DateTime <- selected_data$DateTime + minutes(120)
     
-    OTICE_data <- rbind(OTICE_data, selected_data)
-  }
+    OTICE_data <- rbind(OTICE_data, selected_data)}
+  
+   # Rename the columns
+  colnames(OTICE_data) <- c("DateTime", "Sampling.point", "temperature", "H2O.O", "NH3.O", "CO2.O", "CH4.O")
   
   # Create the output file name
   output_file <- file.path(clean_path, paste0(format(Sys.Date(), "%Y%m%d"), "_ODP", ".CSV"))
@@ -87,5 +93,7 @@ ODP <- function(raw_path, clean_path) {
 
 
 # Call the function to combine and save the data (Example)
-# ODP(raw_path="D:/Data Analysis/Gas_data/Raw_data/OTICE_raw", clean_path="D:/Data Analysis/Gas_data/Clean_data/OTICE_clean")
+#ODP(raw_path="D:/Data Analysis/Gas_data/Raw_data/OTICE_raw", clean_path="D:/Data Analysis/Gas_data/Clean_data/OTICE_clean")
+#OTICE_data <- read.csv("D:/Data Analysis/Gas_data/Clean_data/OTICE_clean/20230830_ODP.CSV")
+
 
