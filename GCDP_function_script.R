@@ -52,6 +52,7 @@ FDP <- function(raw_path, clean_path) {
 
 
 ######### OTICE FUNCTION ##########
+######### OTICE FUNCTION ##########
 ODP <- function(raw_path, clean_path) {
   # Create an empty data table
   OTICE_data <- data.table()
@@ -66,7 +67,7 @@ ODP <- function(raw_path, clean_path) {
     data <- read.table(file, header = TRUE, sep = delimiter)  # Adjust the sep parameter based on the delimiter
     
     # Select specific columns by index and rename column 1 to "Date.time"
-    selected_data <- data[, c(1, 2, 3, 4, 6, 10, 13)]
+    selected_data <- data[, c(1, 2, 3, 4, 6, 10, 13)]  # Include "CO2" column and exclude others
     colnames(selected_data)[1] <- "Date.time"
     
     # Remove decimal points from seconds in the "Date.time" column
@@ -82,14 +83,14 @@ ODP <- function(raw_path, clean_path) {
   }
   
   # Rename the columns
-  colnames(OTICE_data) <- c("Date.time", "Sampling.point", "temperature", "H2O", "NH3", "CO2", "CH4")
+  colnames(OTICE_data) <- c("Date.time", "Sampling.point.O", "temperature", "relative.humidity", "NH3", "CO2", "CH4")
   
   # Mutate columns
-  OTICE_data[, c("Date.time", "Sampling.point", "temperature", "H2O", "NH3", "CO2", "CH4") := .(
-    as.POSIXct(Date.time, format = "%d/%m/%Y %H:%M:%S"),
-    as.factor(Sampling.point),
+  OTICE_data[, c("Date.time", "Sampling.point.O", "temperature", "relative.humidity", "NH3", "CO2", "CH4") := .(
+    as.POSIXct(Date.time, format = "%Y-%m-%d %H:%M:%S"),
+    as.factor(Sampling.point.O),
     as.numeric(temperature),
-    as.numeric(H2O),
+    as.numeric(relative.humidity),
     as.numeric(NH3),
     as.numeric(CO2),
     as.numeric(CH4))]
@@ -109,8 +110,9 @@ ODP <- function(raw_path, clean_path) {
   print(head(ODP_data))
 }
 
+
 # Call the function to combine and save the data (Example)
-#ODP(raw_path="D:/Data Analysis/Gas_data/Raw_data/OTICE_raw", clean_path="D:/Data Analysis/Gas_data/Clean_data/OTICE_clean")
+#ODP(raw_path="D:/Data Analysis/Gas_data/Raw_data/OTICE_raw/2023/08", clean_path="D:/Data Analysis/Gas_data/Clean_data/OTICE_clean")
 #OTICE_data <- read.csv("D:/Data Analysis/Gas_data/Clean_data/OTICE_clean/20230830_ODP.CSV")
 
 
